@@ -7,8 +7,7 @@ const createUser = asyncHandler(
             const findUser =await User.findOne({email:email});
             if(!findUser){
                 // Create a new users
-                let newUser = await User.create(req.body); // Assuming req.body contains user data
-                // console.log(newUser);                                
+                let newUser = await User.create(req.body);                              
                 resp.send(newUser);
                 resp.json(newUser);
             }else{
@@ -25,4 +24,18 @@ const createUser = asyncHandler(
     }
 );
 
-module.exports = { createUser };
+const loginUserCtrl = asyncHandler(async (req,resp) =>{
+    const {email, password} = req.body;
+    console.log(email, password);
+
+    //Check if user is exits or not 
+    const findUser = await User.findOne({email});
+    if(findUser && (await findUser.isPasswordMatched(password))){
+        resp.json(findUser);
+    }else{
+        throw new Error("Invalid Credentials!")
+    };
+    
+});
+
+module.exports = { createUser, loginUserCtrl };

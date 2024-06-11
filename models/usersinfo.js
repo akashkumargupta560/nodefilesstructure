@@ -30,12 +30,15 @@ var userSchema = new mongoose.Schema({
         required:true,
     },
 });
-
+//for encrypt password
 userSchema.pre('save',async function(next){
     const salt = await bcrypt.genSaltSync(10);
     this.password = await bcrypt.hash(this.password,salt);
 })
-
+//for password match
+userSchema.methods.isPasswordMatched = async function (enteredPassword) {
+    return await bcrypt.compare(enteredPassword, this.password);
+}
 //Export the model
 module.exports = mongoose.model('userinfos', userSchema);
 
