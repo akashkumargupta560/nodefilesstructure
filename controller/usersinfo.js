@@ -1,5 +1,7 @@
-const User = require("../models/usersinfo"); // Assuming User is the Mongoose model
+const { generateToken } = require("../config/jwtToken");
+const User = require("../models/usersinfo"); 
 const asyncHandler =require("express-async-handler")
+//user register 
 const createUser = asyncHandler(
     async (req, resp) => {
         // try {
@@ -7,9 +9,9 @@ const createUser = asyncHandler(
             const findUser =await User.findOne({email:email});
             if(!findUser){
                 // Create a new users
-                let newUser = await User.create(req.body);                              
+                let newUser = await User.create(req.body);                            
                 resp.send(newUser);
-                resp.json(newUser);
+                resp.json(findUser);
             }else{
                 throw new Error("User Already Exists!");                                                                                                                                 
                 // resp.json({
@@ -24,18 +26,26 @@ const createUser = asyncHandler(
     }
 );
 
+//user login Api
 const loginUserCtrl = asyncHandler(async (req,resp) =>{
     const {email, password} = req.body;
-    console.log(email, password);
+    // console.log(email, password);
 
     //Check if user is exits or not 
     const findUser = await User.findOne({email});
     if(findUser && (await findUser.isPasswordMatched(password))){
-        resp.json(findUser);
+        resp.json({
+            _id:findUser?._id,
+            name:findUser?.name,
+            username:findUser?.username,
+            email:findUser?.email,
+            phone:findUser?.phone,
+            website:findUser?.website,
+            token:generateToken(findUser?._id)
+        });
     }else{
         throw new Error("Invalid Credentials!")
     };
-    
 });
 
 module.exports = { createUser, loginUserCtrl };
