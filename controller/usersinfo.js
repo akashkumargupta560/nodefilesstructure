@@ -48,4 +48,16 @@ const loginUserCtrl = asyncHandler(async (req,resp) =>{
     };
 });
 
-module.exports = { createUser, loginUserCtrl };
+//Get all user data Api
+
+const getAllUsers = asyncHandler( async(req,resp) =>{
+    try{
+        const getUsers = await User.find()
+        console.log(getUsers)
+        resp.send(getUsers)
+    }catch(error){
+        throw new Error(error,"Invalid Credentials Users!")
+    }
+});
+
+module.exports = { createUser, loginUserCtrl,getAllUsers };
