@@ -48,6 +48,26 @@ const loginUserCtrl = asyncHandler(async (req,resp) =>{
     };
 });
 
+//Update use API
+const updateUser =asyncHandler ( async(req,resp) =>{
+    const {id} = req.params;
+    try{
+        const userUpdateValue = await UserModel.findByIdAndUpdate(id,{
+            name:req.body?.name,
+            username:req.body?.username,
+            email:req.body?.email,
+            phone:req.body?.phone,
+            website:req.body?.website,
+        },{
+            new:true,
+        });
+        resp.json(userUpdateValue);
+
+    }catch(error){ 
+        throw new Error(error);
+    }
+})
+
 //Get all user data Api
 
 const getAllUsers = asyncHandler( async(req,resp) =>{
@@ -86,4 +106,11 @@ const deleteUser = asyncHandler( async(req,resp) =>{
 });
 
 
-module.exports = { createUser, loginUserCtrl,getAllUsers,getSingleUser,deleteUser };
+module.exports = { 
+    createUser, 
+    loginUserCtrl,
+    getAllUsers,
+    getSingleUser,
+    deleteUser,
+    updateUser
+};
