@@ -1,15 +1,15 @@
 const { generateToken } = require("../config/jwtToken");
-const User = require("../models/usersinfo"); 
+const UserModel = require("../models/usersinfo"); 
 const asyncHandler =require("express-async-handler")
 //user register 
 const createUser = asyncHandler(
     async (req, resp) => {
         // try {
             const email =req.body.email;
-            const findUser =await User.findOne({email:email});
+            const findUser =await UserModel.findOne({email:email});
             if(!findUser){
                 // Create a new users
-                let newUser = await User.create(req.body);                            
+                let newUser = await UserModel.create(req.body);                            
                 resp.send(newUser);
                 resp.json(findUser);
             }else{
@@ -32,7 +32,7 @@ const loginUserCtrl = asyncHandler(async (req,resp) =>{
     // console.log(email, password);
 
     //Check if user is exits or not 
-    const findUser = await User.findOne({email});
+    const findUser = await UserModel.findOne({email});
     if(findUser && (await findUser.isPasswordMatched(password))){
         resp.json({
             _id:findUser?._id,
@@ -52,12 +52,25 @@ const loginUserCtrl = asyncHandler(async (req,resp) =>{
 
 const getAllUsers = asyncHandler( async(req,resp) =>{
     try{
-        const getUsers = await User.find()
-        console.log(getUsers)
+        const getUsers = await UserModel.find()
+        // console.log(getUsers)
         resp.send(getUsers)
     }catch(error){
         throw new Error(error,"Invalid Credentials Users!")
     }
 });
 
-module.exports = { createUser, loginUserCtrl,getAllUsers };
+//Get single User
+
+const getSingleUser = asyncHandler( async(req,resp) =>{
+    const {id} =req.params;
+    // console.log(id)
+    try{
+        const singleUser = await UserModel.findById(id);    
+        resp.json(singleUser);
+    }catch(error){
+       throw new Error(error)
+    }
+});
+
+module.exports = { createUser, loginUserCtrl,getAllUsers,getSingleUser };
