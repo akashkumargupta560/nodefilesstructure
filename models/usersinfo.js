@@ -33,6 +33,14 @@ var userSchema = new mongoose.Schema({
         type:String,
         default:"user",
     },
+    cart:{
+        type:Array,
+        default: []
+    },
+    address:[{type: mongoose.Schema.Types.ObjectId, ref:"Address"}],
+    wishlist:[{type: mongoose.Schema.Types.ObjectId, ref:"Product"}]
+},{
+    timestamps:true
 });
 //for encrypt password
 userSchema.pre('save',async function(next){
@@ -45,7 +53,6 @@ userSchema.methods.isPasswordMatched = async function (enteredPassword) {
 }
 //Export the model
 module.exports = mongoose.model('userinfos', userSchema);
-
 
 
 
