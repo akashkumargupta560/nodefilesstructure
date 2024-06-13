@@ -49,10 +49,10 @@ const loginUserCtrl = asyncHandler(async (req,resp) =>{
 });
 
 //Update use API
-const updateUser =asyncHandler ( async(req,resp) =>{
-    const {id} = req.params;
+const updateUser =asyncHandler ( async (req,resp) =>{
+    const {_id} = req.userDetails;
     try{
-        const userUpdateValue = await UserModel.findByIdAndUpdate(id,{
+        const userUpdateValue = await UserModel.findByIdAndUpdate( _id,{
             name:req.body?.name,
             username:req.body?.username,
             email:req.body?.email,
@@ -66,7 +66,7 @@ const updateUser =asyncHandler ( async(req,resp) =>{
     }catch(error){ 
         throw new Error(error);
     }
-})
+});
 
 //Get all user data Api
 
@@ -105,12 +105,52 @@ const deleteUser = asyncHandler( async(req,resp) =>{
     }
 });
 
+const blockUser = asyncHandler( async( req,resp) =>{
+    const {id } = req.params;
+    try{
+        const block = await UserModel.findByIdAndUpdate(
+            id,
+            {
+                isBlock:true,
+            },
+            {
+                new:true,
+            }
+        );
+        resp.json({
+            message:"User Blocked!",
+        })
+    }catch(error){
+        throw new Error(error);
+    }
+});
 
+const unblockUser = asyncHandler( async( req,resp) =>{
+    const {id } = req.params;
+    try{
+        const unblock = await UserModel.findByIdAndUpdate(
+            id,
+            {
+                isBlock:false,
+            },
+            {
+                new:true,
+            }
+        );
+        resp.json({
+            message:"User UnBlocked!",
+        })
+    }catch(error){
+        throw new Error(error);
+    }
+});
 module.exports = { 
     createUser, 
     loginUserCtrl,
     getAllUsers,
     getSingleUser,
     deleteUser,
-    updateUser
+    updateUser,
+    blockUser,
+    unblockUser
 };
