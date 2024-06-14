@@ -6,8 +6,11 @@ const PORT = process.env.PORT || 4000;
 const userRouter = require("./routes/userinfo")
 const bodyParser = require("body-parser");
 const { notFound, errorHandler } = require("./middleware/errorHandler");
+const cookieParser = require("cookie-parser");
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser())
 dbConnect();
 
 //declear api here
