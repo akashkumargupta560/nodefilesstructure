@@ -2,7 +2,8 @@ const { generateToken } = require("../config/jwtToken");
 const UserModel = require("../models/usersinfo"); 
 const asyncHandler =require("express-async-handler");
 const validateMongoDbId = require("../utilits/validateMongodbId");
-
+const { generateRegreshToken } = require("../config/refreshToken");
+const jwt = require("jsonwebtoken");
 //user register 
 const createUser = asyncHandler(
     async (req, resp) => {
@@ -36,6 +37,18 @@ const loginUserCtrl = asyncHandler(async (req,resp) =>{
     //Check if user is exits or not 
     const findUser = await UserModel.findOne({email});
     if(findUser && (await findUser.isPasswordMatched(password))){
+        const refreshToken = await generateRegreshToken(findUser?._id)
+        const updateUser = await UserModel.findByIdAndUpdate(
+            findUser.id,{
+                refreshToken:refreshToken,
+            },{
+                new:true
+            }
+        );
+        resp.cookie("refreshToken", refreshToken,{
+            httpOnly:true,
+            maxAge: 72 * 60 * 60 * 1000,
+        })
         resp.json({
             _id:findUser?._id,
             name:findUser?.name,
@@ -49,7 +62,24 @@ const loginUserCtrl = asyncHandler(async (req,resp) =>{
         throw new Error("Invalid Credentials!")
     };
 });
-
+//Hnadle REfresh Token
+const handleRefreshToken = asyncHandler( async(req, resp) =>{
+    const cookie = req.cookies;
+    // console.log(cookie,"??????????????????????????????????")
+    if(!cookie?.refreshToken) throw new Error("No Refresh Token in Cookies!");
+    const refreshToken = cookie.refreshToken;
+    // console.log(refreshToken);
+    const user = await UserModel.findOne({ refreshToken });
+    if(!user) throw new Error("No Refresh token present in db or not match!");
+    jwt.verify(refreshToken, process.env.JWT_SECRET,(err, decoded) =>{
+        console.log(decoded)
+        if(err || user.id !== decoded.id){
+            throw new Error("This is something wrong with refresh token!");
+        }
+        const accessToken = generateToken(user?._id)
+        resp.json(accessToken)
+    });
+});
 //Update use API
 const updateUser =asyncHandler ( async (req,resp) =>{
     const {_id} = req.userDetails;
@@ -159,5 +189,6 @@ module.exports = {
     deleteUser,
     updateUser,
     blockUser,
-    unblockUser
+    unblockUser,
+    handleRefreshToken
 };
