@@ -80,6 +80,39 @@ const handleRefreshToken = asyncHandler( async(req, resp) =>{
         resp.json(accessToken)
     });
 });
+//Logout create API
+const logout = asyncHandler(async (req, resp) => {
+    const cookie = req.cookies;
+    
+    if (!cookie?.refreshToken) {
+        throw new Error("No Refresh Token in Cookies!");
+    }
+
+    const refreshToken = cookie.refreshToken;
+    const user = await UserModel.findOne({ refreshToken });
+
+    if (!user) {
+        resp.clearCookie("refreshToken", {
+            httpOnly: true,
+            secure: true
+        });
+        return resp.sendStatus(204); // No Content
+    }
+
+    // Clear refreshToken in the database for the user
+    await UserModel.findOneAndUpdate({
+        refreshToken: "",
+    });
+
+    // Clear the refreshToken cookie in the response
+    resp.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: true
+    });
+
+    resp.sendStatus(204); // No Content
+});
+
 //Update use API
 const updateUser =asyncHandler ( async (req,resp) =>{
     const {_id} = req.userDetails;
@@ -184,6 +217,7 @@ const unblockUser = asyncHandler( async( req,resp) =>{
 module.exports = { 
     createUser, 
     loginUserCtrl,
+    logout,
     getAllUsers,
     getSingleUser,
     deleteUser,

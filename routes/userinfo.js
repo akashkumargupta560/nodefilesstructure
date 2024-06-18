@@ -3,7 +3,8 @@ const router = express.Router();
 const 
 {
     createUser,
-    loginUserCtrl, 
+    loginUserCtrl,
+    logout, 
     getAllUsers,
     getSingleUser,
     deleteUser,
@@ -17,6 +18,7 @@ const { authMiddleware, isAdmin} = require("../middleware/authMiddleware");
 
 router.post("/register",createUser);
 router.post("/login",loginUserCtrl);
+router.get("/logout",logout);
 router.get("/all-users",getAllUsers);
 router.get("/refresh",handleRefreshToken);
 router.get("/:id", authMiddleware,isAdmin,getSingleUser);
