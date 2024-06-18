@@ -15,8 +15,9 @@ app.use(cookieParser())
 dbConnect();
 
 //declear api here
-app.use("/api/user", userRouter)
-app.use("/api/product", productRouter)
+app.use("/api/user", userRouter);
+app.use("/api/product", productRouter);
+
 // Middleware setup Error Handling declear here
 app.use(notFound);
 app.use(errorHandler);
