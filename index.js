@@ -3,7 +3,8 @@ const dbConnect = require("./config/dbConnect");
 const app = express();
 const dotenv = require("dotenv").config();
 const PORT = process.env.PORT || 4000;
-const userRouter = require("./routes/userinfo")
+const userRouter = require("./routes/userinfo");
+const productRouter = require("./routes/product");
 const bodyParser = require("body-parser");
 const { notFound, errorHandler } = require("./middleware/errorHandler");
 const cookieParser = require("cookie-parser");
@@ -15,7 +16,7 @@ dbConnect();
 
 //declear api here
 app.use("/api/user", userRouter)
-
+app.use("/api/product", productRouter)
 // Middleware setup Error Handling declear here
 app.use(notFound);
 app.use(errorHandler);
