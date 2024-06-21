@@ -8,11 +8,13 @@ const productRouter = require("./routes/product");
 const bodyParser = require("body-parser");
 const { notFound, errorHandler } = require("./middleware/errorHandler");
 const cookieParser = require("cookie-parser");
+const morgon = require("morgan");
+dbConnect();
 
+app.use(morgon("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser())
-dbConnect();
+app.use(cookieParser());
 
 //declear api here
 app.use("/api/user", userRouter);
