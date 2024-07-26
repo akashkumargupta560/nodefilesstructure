@@ -70,13 +70,73 @@ const getProduct = asyncHandler( async(req, resp) =>{
 });
 
 //Get All Product API 
-const getAllProduct = asyncHandler( async(req,resp) =>{
-    try{
-        const allProduct = await productModel.find();
-        resp.json(allProduct)
-    }catch(error){
-        throw new Error(error);
-    }
+// const getAllProduct = asyncHandler( async(req,resp) =>{
+//     try{
+//         ///Filtering
+//         const querObj = { ...req.query };
+//         const excludeFields = ["page","sort","limit","fields"];
+//          excludeFields.forEach((el) => delete querObj[el]);
+//         //  console.log(querObj); 
+
+//         let queryStr = JSON.stringify(querObj);
+//         queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+
+//         const query = await productModel.find(JSON.parse(queryStr));
+//         // console.log(req.query,'....... QUery')
+//         //Sorting
+       
+//         if(req.query){
+
+//             var result = query.filter(function(e, i) {
+//                 // console.log(query[i]==2000,'...........   QQQQQQ')
+//                 return query[i] == req.query
+//               })
+//             //   console.log(result,'.............   RESULT')
+
+//             // const sortBy = req.query.sort.split(",").join(" ");
+//             // query =query.sort(sortBy);
+//         }else{
+//             query = query.sort("-createdAt")
+//         }
+//         const products = await query;
+       
+//         return resp.json(products)
+//     }catch(error){
+//         console.log(error,"errrorrrrr")
+//         throw new Error(error);
+//     }
+// });
+const getAllProduct = asyncHandler( async(req,res) =>{
+    try {
+
+        const query = {};
+        
+        if (req.query.price) {
+            query.price = req.query.price;
+        }
+        if (req.query.color) {
+            query.color = req.query.color;
+        }
+        if (req.query.category) {
+            query.category = req.query.category;
+        }
+        console.log(query,'.............  query')
+    
+        const products = await productModel.find(query);
+
+        console.log(products,".........................  products")
+        // res.json(products);
+      } catch (err) {
+        console.log(err,'................. ERROR HERE')
+        res.status(500).json({ message: err.message });
+      }
 });
 
 module.exports = {createProduct,getProduct,getAllProduct,updateProducts};
+
+// console.log(JSON.parse(queryStr)); 
+        // const allProduct = await productModel.find(querObj);
+        //Anthor way to filter
+        // const allProduct = await productModel.where("category").equals(
+        //     req.query.category
+        // );

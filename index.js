@@ -9,6 +9,8 @@ const bodyParser = require("body-parser");
 const { notFound, errorHandler } = require("./middleware/errorHandler");
 const cookieParser = require("cookie-parser");
 const morgon = require("morgan");
+const cors = require("cors");
+app.use(cors({ origin: 'http://localhost:3000' }));
 dbConnect();
 
 app.use(morgon("dev"));
