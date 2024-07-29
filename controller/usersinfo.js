@@ -5,29 +5,50 @@ const validateMongoDbId = require("../utilits/validateMongodbId");
 const { generateRegreshToken } = require("../config/refreshToken");
 const jwt = require("jsonwebtoken");
 //user register 
-const createUser = asyncHandler(
-    async (req, resp) => {
-        // try {
+// const createUser = asyncHandler(
+//     async (req, resp) => {
+//         // try {
+//             const email =req.body.email;
+//             const findUser =await UserModel.findOne({email:email});
+//             if(!findUser){
+//                 // Create a new users
+//                 let newUser = await UserModel.create(req.body);                            
+//                 resp.send(newUser);
+//                 resp.json(findUser);
+//             }else{
+//                 throw new Error("User Already Exists!");                                                                                                                                 
+//                 // resp.json({
+//                 //     msg:"User Already Exists!",
+//                 //     success:false
+//                 // });
+//             }
+//         // } catch (error) {
+//         //     console.error(error);
+//         //     resp.status(500).send("Error creating user");
+//         // }
+//     }
+// );
+const createUser = async (req, resp) => {
+        try {
             const email =req.body.email;
-            const findUser =await UserModel.findOne({email:email});
-            if(!findUser){
-                // Create a new users
+            const findUser = await UserModel.findOne({email:email});
+
+            if(findUser){
+
+            resp.json({
+                msg:"User Already Exists!",
+                success:false
+            });
+            }
+            else{
                 let newUser = await UserModel.create(req.body);                            
                 resp.send(newUser);
-                resp.json(findUser);
-            }else{
-                throw new Error("User Already Exists!");                                                                                                                                 
-                // resp.json({
-                //     msg:"User Already Exists!",
-                //     success:false
-                // });
             }
-        // } catch (error) {
-        //     console.error(error);
-        //     resp.status(500).send("Error creating user");
-        // }
+        } catch (error) {
+            console.error(error);
+            resp.status(500).send("Error creating user");
+        }
     }
-);
 
 //user login Api
 const loginUserCtrl = asyncHandler(async (req,resp) =>{
