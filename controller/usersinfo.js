@@ -66,10 +66,10 @@ const loginUserCtrl = asyncHandler(async (req,resp) =>{
                 new:true
             }
         );
-        resp.cookie("refreshToken", refreshToken,{
-            httpOnly:true,
-            maxAge: 72 * 60 * 60 * 1000,
-        })
+        // resp.cookie(refreshToken,{
+        //     httpOnly:true,
+        //     maxAge: 72 * 60 * 60 * 1000,
+        // })
         resp.json({
             _id:findUser?._id,
             name:findUser?.name,
@@ -80,6 +80,7 @@ const loginUserCtrl = asyncHandler(async (req,resp) =>{
             token:generateToken(findUser?._id)
         });
     }else{
+        resp.status(404)
         throw new Error("Invalid Credentials!")
     };
 });
